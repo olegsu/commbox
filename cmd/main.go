@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/olegsu/commbox"
 )
@@ -12,9 +13,12 @@ func main() {
 		Token: getEnvOrDie("TOKEN"),
 	})
 
-	var streamID int64
-	phone := ""
-	message := ""
+	n, err := strconv.Atoi(getEnvOrDie("STREAM_ID"))
+	dieOnError(err)
+
+	var streamID int64 = int64(n)
+	phone := getEnvOrDie("PHONE_NUMBER")
+	message := getEnvOrDie("MESSAGE")
 
 	obj, err := cm.CreateObject(streamID, commbox.CreateObjectRequest{
 		Data: commbox.CreateObjectData{
