@@ -12,7 +12,7 @@ type (
 	Commbox interface {
 		Status() (string, error)
 		Request(string, string, io.Reader) (string, error)
-		CreateObject(int64, CreateObjectOptions) (string, error)
+		CreateObject(int64, CreateObjectRequest) (CreateObjectResponse, error)
 	}
 
 	// Optons that are required to create Commbox

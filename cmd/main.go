@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -12,23 +11,24 @@ func main() {
 	cm := commbox.New(&commbox.Optons{
 		Token: getEnvOrDie("TOKEN"),
 	})
-	encStreamID := getEnvOrDie("ENCRYPTED_STREAM_ID")
-	log.Println(cm.Request("GET", fmt.Sprintf("/streams/%s/streamavailability", encStreamID), nil))
-	fmt.Println()
-	log.Println(cm.CreateObject(5027, commbox.CreateObjectOptions{
+
+	var streamID int64
+	phone := ""
+	message := ""
+
+	obj, err := cm.CreateObject(streamID, commbox.CreateObjectRequest{
 		Data: commbox.CreateObjectData{
-			Type:                   5, // type mail
+			// Example from the support guy of commbox
+			// 5 = mail -> https://www.commbox.io/api/#section/Enums/Object-Types
+			Type: 5,
+			// 4 = telephone -> https://www.commbox.io/api/#section/Enums/Stream-Provider-Types
 			UserStreamProviderType: 4,
-			// email address from who to send the request
-			UserStreamProviderID: "",
-			Content: &commbox.CreateObjectContent{
-				Subject: "hello-world",
-			},
-			Message: "hello",
-			// User: commbox.CreateObjectUser{
-			// },
+			UserStreamProviderID:   phone,
+			Message:                message,
 		},
-	}))
+	})
+	dieOnError(err)
+	log.Printf("Object created: %v", obj)
 }
 
 func getEnvOrDie(key string) string {
@@ -38,4 +38,11 @@ func getEnvOrDie(key string) string {
 		os.Exit(1)
 	}
 	return v
+}
+
+func dieOnError(err error) {
+	if err != nil {
+		log.Printf("Error: %s", err.Error())
+		os.Exit(1)
+	}
 }
